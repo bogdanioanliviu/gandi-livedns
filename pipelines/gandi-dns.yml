@@ -26,6 +26,6 @@ stages:
     - task: Docker@2
       inputs:
         containerRegistry: 'my_dockerHub'
-        repository: 'gandi'
+        repository: 'bogdanioanliviu/gandi'
         command: 'push'
-        tags: 'bogdanioanliviu/gandi:$(Build.BuildId)'
+        tags: '$(Build.BuildId)'
