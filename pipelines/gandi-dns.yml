@@ -1,5 +1,5 @@
 trigger:
-- master
+  - master
 
 resources:
 - repo: self
@@ -10,7 +10,7 @@ stages:
 - stage: Test_trivy
   displayName: 'Trivy test'
   pool:
-      name: Default
+    name: Default
   jobs:
   - job: Test_with_trivy
     steps:
@@ -18,11 +18,11 @@ stages:
       inputs:
         version: 'latest'
         path: '.'
-        
+
 - stage:  Build
   displayName: Build new img
   pool:
-      name: Default
+    name: Default
   jobs:
   - job: Build
     displayName: Build
@@ -40,7 +40,7 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
-          docker run --rm  -v /var/run/docker.sock:/var/run/docker.sock -v /home/bil/.docker:/root/.docker -v $PWD:/src --workdir /src aquasec/trivy:latest image --exit-code 0 --severity LOW,MEDIUM --exit-code 1 --format template --template "@templates/junit.tpl" --output /src/junit-report.xml --security-checks vuln,config,secret gandi:487
+          docker run --rm  -v /var/run/docker.sock:/var/run/docker.sock -v /home/bil/.docker:/root/.docker -v $PWD:/src --workdir /src aquasec/trivy:latest image --exit-code 0 --severity LOW,MEDIUM --exit-code 1 --format template --template "@templates/junit.tpl" --output /src/junit-report.xml --security-checks vuln,config,secret bogdanioanliviu/gandi:$(Build.BuildId)
     #- task: PublishBuildArtifacts@1
     #  inputs:
     #    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
@@ -61,3 +61,18 @@ stages:
         repository: 'bogdanioanliviu/gandi'
         command: 'push'
         tags: '$(Build.BuildId)'
+
+- stage: CleanUp
+  displayName: Clean up
+  dependsOn: Build
+  pool:
+    name: Default
+  jobs:
+    - job: CleanUp_img
+      steps:
+        - task: Bash@3
+          displayName: Delete docker img
+          inputs:
+            targetType: 'inline'
+            script: 'docker rmi bogdanioanliviu/gandi:$(Build.BuildId) gandi:$(Build.BuildId)'
+            failOnStderr: true
