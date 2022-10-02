@@ -7,13 +7,24 @@ variables:
   tag: '$(Build.BuildId)'
 
 stages:
-- stage: Build
-  displayName: Build image
+- stage: Test_trivy
+  displayName: 'Trivy test'
+  pool:
+      name: Default
+  jobs:
+  - job: Test_with_trivy
+    steps:
+    - task: trivy@1
+      inputs:
+        version: 'latest'
+        path: '.'
+- stage:  Build
+  displayName: Build new img
+  pool:
+      name: Default
   jobs:
   - job: Build
     displayName: Build
-    pool:
-      name: Default
     steps:
     - task: Docker@2
       displayName: Build an image
