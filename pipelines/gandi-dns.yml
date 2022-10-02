@@ -34,6 +34,11 @@ stages:
         command: 'build'
         Dockerfile: '**/Dockerfile'
         arguments: '-t bogdanioanliviu/gandi:$(Build.BuildId)'
+    - task: trivy@1
+      displayName: Scan img trivy
+      inputs:
+        version: 'latest'
+        image: 'bogdanioanliviu/gandi:$(Build.BuildId)'
     - task: Docker@2
       inputs:
         containerRegistry: 'my_dockerHub'
