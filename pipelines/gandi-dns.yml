@@ -39,9 +39,9 @@ stages:
       inputs:
         version: 'latest'
         image: 'bogdanioanliviu/gandi:$(Build.BuildId)'
-    - task: Docker@2
-      inputs:
-        containerRegistry: 'my_dockerHub'
-        repository: 'bogdanioanliviu/gandi'
-        command: 'push'
-        tags: '$(Build.BuildId)'
+    #- task: Docker@2
+    #  inputs:
+    #    containerRegistry: 'my_dockerHub'
+    #    repository: 'bogdanioanliviu/gandi'
+    #    command: 'push'
+    #    tags: '$(Build.BuildId)'
