@@ -7,18 +7,18 @@ variables:
   tag: '$(Build.BuildId)'
 
 stages:
-#- stage: Test_trivy
-#  displayName: 'Trivy test'
-#  pool:
-#      name: Default
-#  jobs:
-#  - job: Test_with_trivy
-#    steps:
-#    - task: trivy@1
-#      inputs:
-#        version: 'latest'
-#        path: '.'
-
+- stage: Test_trivy
+  displayName: 'Trivy test'
+  pool:
+      name: Default
+  jobs:
+  - job: Test_with_trivy
+    steps:
+    - task: trivy@1
+      inputs:
+        version: 'latest'
+        path: '.'
+        
 - stage:  Build
   displayName: Build new img
   pool:
@@ -27,26 +27,25 @@ stages:
   - job: Build
     displayName: Build
     steps:
-    #- task: Docker@2
-    #  displayName: Build an image
-    #  inputs:
-    #    containerRegistry: 'my_dockerHub'
-    #    repository: 'gandi'
-    #    command: 'build'
-    #    Dockerfile: '**/Dockerfile'
-    #    arguments: '-t bogdanioanliviu/gandi:$(Build.BuildId)'
+    - task: Docker@2
+      displayName: Build an image
+      inputs:
+        containerRegistry: 'my_dockerHub'
+        repository: 'gandi'
+        command: 'build'
+        Dockerfile: '**/Dockerfile'
+        arguments: '-t bogdanioanliviu/gandi:$(Build.BuildId)'
     - task: Bash@3
       displayName: Scan img trivy
       inputs:
         targetType: 'inline'
         script: |
           docker run --rm  -v /var/run/docker.sock:/var/run/docker.sock -v /home/bil/.docker:/root/.docker -v $PWD:/src --workdir /src aquasec/trivy:latest image --exit-code 0 --severity LOW,MEDIUM --exit-code 1 --format template --template "@templates/junit.tpl" --output /src/junit-report.xml --security-checks vuln,config,secret gandi:487
-          cp junit-report.xml $(Build.ArtifactStagingDirectory)/junit-report.xml
-    - task: PublishBuildArtifacts@1
-      inputs:
-        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        ArtifactName: 'drop'
-        publishLocation: 'Container'
+    #- task: PublishBuildArtifacts@1
+    #  inputs:
+    #    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    #    ArtifactName: 'drop'
+    #    publishLocation: 'Container'
     - task: PublishTestResults@2
       inputs:
         testResultsFormat: 'JUnit'
@@ -55,14 +54,10 @@ stages:
         failTaskOnFailedTests: true
         testRunTitle: 'trivy-gandi'
       condition: 'always()'
-    #- task: trivy@1
-    #  displayName: Scan img trivy
-    #  inputs:
-    #    version: 'latest'
-    #    image: 'bogdanioanliviu/gandi:$(Build.BuildId)'
-    #- task: Docker@2
-    #  inputs:
-    #    containerRegistry: 'my_dockerHub'
-    #    repository: 'bogdanioanliviu/gandi'
-    #    command: 'push'
-    #    tags: '$(Build.BuildId)'
+
+    - task: Docker@2
+      inputs:
+        containerRegistry: 'my_dockerHub'
+        repository: 'bogdanioanliviu/gandi'
+        command: 'push'
+        tags: '$(Build.BuildId)'
