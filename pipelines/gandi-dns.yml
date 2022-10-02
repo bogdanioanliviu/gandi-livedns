@@ -34,11 +34,23 @@ stages:
         command: 'build'
         Dockerfile: '**/Dockerfile'
         arguments: '-t bogdanioanliviu/gandi:$(Build.BuildId)'
-    - task: trivy@1
+    - task: Bash@3
       displayName: Scan img trivy
       inputs:
-        version: 'latest'
-        image: 'bogdanioanliviu/gandi:$(Build.BuildId)'
+        targetType: 'inline'
+        script: |
+          docker run --rm  -v /var/run/docker.sock:/var/run/docker.sock -v /home/bil/.docker:/root/.docker -v $PWD:/src --workdir /src aquasec/trivy:latest image --exit-code 1 --format template --template "@templates/junit.tpl" --output /src/junit-report.xml --security-checks vuln,config,secret bogdanioanliviu/gandi:$(Build.BuildId)
+    
+    - task: PublishTestResults@2
+      inputs:
+        testResultsFormat: 'JUnit'
+        testResultsFiles: '**/junit-report.xml'
+        failTaskOnFailedTests: true
+    #- task: trivy@1
+    #  displayName: Scan img trivy
+    #  inputs:
+    #    version: 'latest'
+    #    image: 'bogdanioanliviu/gandi:$(Build.BuildId)'
     #- task: Docker@2
     #  inputs:
     #    containerRegistry: 'my_dockerHub'
