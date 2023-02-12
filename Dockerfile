@@ -1,22 +1,22 @@
 FROM alpine:3.17.2
 LABEL maintainer="jbbodart@yahoo.com"
 
-ENV REFRESH_INTERVAL=600
-ENV SET_IPV4="yes"
-ENV SET_IPV6="no"
-ENV TTL=300
-
-RUN apk -U upgrade \
- && apk add curl openssl bind-tools --no-cach \
- && rm -rf /var/cache/apk/* \
- && addgroup -S bil \
- && adduser -S -D bil -G bil
-
-COPY run.sh update_ipv4.sh update_ipv6.sh /usr/local/bin/
+ENV REFRESH_INTERVAL=600 \
+    SET_IPV4="yes" \
+    SET_IPV6="no" \
+    TTL=300
 
 WORKDIR /usr/local/bin/
+COPY run.sh update_ipv4.sh update_ipv6.sh /usr/local/bin/
 
-RUN chmod +x run.sh update_ipv4.sh update_ipv6.sh
+RUN apk -U upgrade \
+    && apk add curl openssl bind-tools --no-cach \
+    && rm -rf /var/cache/apk/* \
+    && chmod +x run.sh update_ipv4.sh update_ipv6.sh \
+    && addgroup -S bil \
+    && adduser -S -D bil -G bil
+
+#RUN chmod +x run.sh update_ipv4.sh update_ipv6.sh
 
 USER bil
 
