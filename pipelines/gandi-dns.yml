@@ -77,5 +77,5 @@ stages:
           displayName: Delete docker img
           inputs:
             targetType: 'inline'
-            script: 'docker rmi bogdanioanliviu/gandi:$(Build.BuildId) gandi:$(Build.BuildId)'
+            script: 'docker rmi bogdanioanliviu/gandi:$(Build.BuildId) aquasec/trivy:latest gandi:$(Build.BuildId)'
             failOnStderr: true
