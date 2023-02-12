@@ -7,17 +7,6 @@ variables:
   tag: '$(Build.BuildId)'
 
 stages:
-#- stage: Test_trivy
-#  displayName: 'Trivy test'
-#  pool:
-#    name: Default
-#  jobs:
-#  - job: Test_with_trivy
-#    steps:
-#    - task: trivy@1
-#      inputs:
-#        version: 'latest'
-#        path: '.'
 
 - stage:  Build
   displayName: Build new img
@@ -50,14 +39,6 @@ stages:
         pathToPublish: $(System.DefaultWorkingDirectory)/report.sarif
         artifactName: CodeAnalysisLogs
       condition: 'always()'
-    #- task: PublishTestResults@2
-    #  inputs:
-    #    testResultsFormat: 'JUnit'
-    #    testResultsFiles: '**/junit-*.xml'
-    #    mergeTestResults: true
-    #    failTaskOnFailedTests: true
-    #    testRunTitle: 'trivy-gandi'
-    #  condition: 'always()'
     - task: Docker@2
       inputs:
         containerRegistry: 'my_dockerHub'
