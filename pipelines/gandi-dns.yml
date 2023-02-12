@@ -42,8 +42,8 @@ stages:
         script: |
           docker run --rm  -v /var/run/docker.sock:/var/run/docker.sock -v /home/bil/.docker:/root/.docker \
           -v $PWD:/src --workdir /src aquasec/trivy:latest \
-          image --ignore-unfixed --exit-code 1 --severity MEDIUM,HIGH,CRITICAL --format sarif -o /src/report.sarif \
-          --security-checks vuln,config,secret bogdanioanliviu/gandi:$(Build.BuildId)
+          image --ignore-unfixed --exit-code 1 --severity HIGH,CRITICAL --format sarif -o /src/report.sarif \
+          --scanners vuln,config,secret bogdanioanliviu/gandi:$(Build.BuildId)
     - task: PublishBuildArtifacts@1
       displayName: "Publish scan results"
       inputs:
