@@ -4,7 +4,8 @@ trigger:
 resources:
 - repo: self
 variables:
-  tag: '$(Build.BuildId)'
+  tag: '$(Build.BuildNumber)'
+  #tag: '$(Build.BuildId)'
 
 stages:
 
